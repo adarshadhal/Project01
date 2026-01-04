@@ -1,3 +1,4 @@
+$ cat dockerfile
 # Base OS
 FROM alpine:3.20
 
@@ -32,3 +33,4 @@ EXPOSE 8082
 
 # Run Tomcat in foreground
 CMD ["catalina.sh", "run"]
+
