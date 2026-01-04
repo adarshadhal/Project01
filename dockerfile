@@ -1,4 +1,3 @@
-$ cat dockerfile
 # Base OS
 FROM alpine:3.20
 
