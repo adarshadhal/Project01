@@ -1,0 +1,67 @@
+pipeline {
+    agent any
+    stages {
+        stage('Code Compile') {
+            steps {
+                echo 'compiling'
+                git branch: 'main', 
+                    credentialsId: 'Git_hub', 
+                    url: 'https://github.com/adarshadhal/Project01.git'
+                sh 'mvn clean compile'
+            }
+        }
+
+        stage('Code coverage'){
+            steps {
+                 echo 'codereview..'
+                 sh 'mvn -P metrics pmd:pmd'
+            }
+        }
+        stage ("code verify"){
+            steps {
+                echo 'code verify..'
+                sh 'mvn verify'
+            }
+            post{
+                success{
+                    jacoco changeBuildStatus: true, runAlways: true, skipCopyOfSrcFiles: true
+                }
+            }
+        }
+        stage ("code uni-test"){
+            steps {
+                echo 'unitest'
+                sh 'mvn test'
+            }
+        }
+        stage ("code package"){
+            steps{
+                echo 'code package..'
+                sh 'mvn package'
+            }
+        }
+        stage ("docker image build & Push ") {
+            steps { 
+                withCredentials([usernamePassword(credentialsId: 'docker_hub_id', 
+                            usernameVariable: 'DOCKER_USER', 
+                            passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        # Same workspace - target/ exists from package stage
+                        LATEST_WAR=$(ls -t target/*.war | head -1)
+                        mv "$LATEST_WAR" target/firstweb.war
+                        
+                        # Build (no sudo - jenkins in docker group)
+                        docker build -f dockerfile -t adarshadhal/firstweb:${BUILD_NUMBER} .
+                        
+                        # Secure login
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        
+                        # Fix: your repo name
+                        docker push adarshadhal/firstweb:${BUILD_NUMBER}
+                    '''
+                }
+            }
+        }
+    }
+}
+
