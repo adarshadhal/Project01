@@ -31,8 +31,8 @@ spec:
   selector:
     app: firstweb
   ports:
-  - port: 8080          # Service port (standard HTTP)
-    targetPort: 8082    # Your Tomcat container port
+  - port: 80          # Service port (standard HTTP)
+    targetPort: 8080    # Your Tomcat container port
     nodePort: 30001     # External access port
     protocol: TCP
     name: http
