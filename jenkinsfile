@@ -5,7 +5,7 @@ pipeline {
             steps {
                 echo 'compiling'
                 git branch: 'main', 
-                    credentialsId: 'Git_hub', 
+                    credentialsId: 'git_hub', 
                     url: 'https://github.com/adarshadhal/Project01.git'
                 sh 'mvn clean compile'
             }
@@ -42,7 +42,7 @@ pipeline {
         }
         stage ("docker image build & Push ") {
             steps { 
-                withCredentials([usernamePassword(credentialsId: 'docker_hub_id', 
+                withCredentials([usernamePassword(credentialsId: 'docker_hub', 
                             usernameVariable: 'DOCKER_USER', 
                             passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
