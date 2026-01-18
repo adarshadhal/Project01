@@ -4,8 +4,8 @@ pipeline {
         stage('Code Compile') {
             steps {
                 echo 'compiling'
-                git branch: 'main', 
-                    credentialsId: 'git_hub', 
+                git branch: 'main',
+                    credentialsId: 'git_hub',
                     url: 'https://github.com/adarshadhal/Project01.git'
                 sh 'mvn clean compile'
             }
@@ -41,27 +41,33 @@ pipeline {
             }
         }
         stage ("docker image build & Push ") {
-            steps { 
-                withCredentials([usernamePassword(credentialsId: 'docker_hub', 
-                            usernameVariable: 'DOCKER_USER', 
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker_hub',
+                            usernameVariable: 'DOCKER_USER',
                             passwordVariable: 'DOCKER_PASS')]) {
                     sh '''
                         # Same workspace - target/ exists from package stage
                         LATEST_WAR=$(ls -t target/*.war | head -1)
                         mv "$LATEST_WAR" target/firstweb.war
-                        
+
                         # Build (no sudo - jenkins in docker group)
                         docker build -f dockerfile -t adarshadhal/firstweb:${BUILD_NUMBER} .
-                        
+
                         # Secure login
                         echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        
+
                         # Fix: your repo name
                         docker push adarshadhal/firstweb:${BUILD_NUMBER}
                     '''
                 }
             }
         }
+        stage("Deploy application") {
+            steps {
+                ansiblePlaybook credentialsId: 'ssh', disableHostKeyChecking: true, extras: '-e "env=web build=${BUILD_NUMBER}"', inventory: 'deploy/inv', playbook: 'deploy/k8.yml', vaultTmpPath: ''
+                }
+        }
+
+        
     }
 }
-
