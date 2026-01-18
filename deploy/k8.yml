@@ -21,7 +21,7 @@
             kubectl delete svc `kubectl get svc | grep firstweb-svc | awk '{print $1}'`
          fi
             echo "Creating App Services"
-            kubectl expose deployment firstweb --name firstweb-svc --type NodePort --port 8080 --target-port 8082
+            kubectl expose deployment firstweb --name firstweb-svc --type NodePort --port 80 --target-port 8082
 
     - name: increase replicas
       shell: kubectl scale deployment firstweb --replicas=1
