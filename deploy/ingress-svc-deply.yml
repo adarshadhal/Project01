@@ -51,7 +51,7 @@ kind: Deployment
 metadata:
   name: pyapp
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: pyapp
@@ -82,7 +82,7 @@ kind: Deployment
 metadata:
   name: unapp
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: unapp
@@ -113,7 +113,7 @@ kind: Deployment
 metadata:
   name: petclinic
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: petclinic
@@ -146,7 +146,7 @@ metadata:
   labels:
     app: firstweb
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: firstweb
@@ -168,12 +168,8 @@ kind: Service
 metadata:
   name: firstweb-svc
 spec:
-  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 8082
   selector:
     app: firstweb
-  ports:
-  - port: 80          # Service port (standard HTTP)
-    targetPort: 8080    # Your Tomcat container port
-    nodePort: 30001     # External access port
-    protocol: TCP
-    name: http
