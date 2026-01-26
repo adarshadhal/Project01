@@ -62,11 +62,11 @@ pipeline {
                 }
             }
         }
-        stage("Deploy application") {
-            steps {
-                ansiblePlaybook credentialsId: 'ssh', disableHostKeyChecking: true, extras: '-e "env=web build=${BUILD_NUMBER}"', inventory: 'deploy/inv', playbook: 'deploy/k8.yml', vaultTmpPath: ''
-                }
-        }
+        // stage("Deploy application") {
+        //     steps {
+        //         ansiblePlaybook credentialsId: 'ssh', disableHostKeyChecking: true, extras: '-e "env=web build=${BUILD_NUMBER}"', inventory: 'deploy/inv', playbook: 'deploy/k8.yml', vaultTmpPath: ''
+        //         }
+        // }
 
         
     }
